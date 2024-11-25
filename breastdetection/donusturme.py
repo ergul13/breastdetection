@@ -1,71 +1,67 @@
-import os
 import pydicom
 import numpy as np
-import matplotlib.pyplot as plt
-from pathlib import Path
-from pydicom.pixel_data_handlers.util import apply_voi_lut
 from PIL import Image
+import os
+from pydicom.pixel_data_handlers.util import apply_windowing
 
 
-# DICOM Dosyasını Okuma Fonksiyonu
-def read_xray(path, voi_lut=True, fix_monochrome=True):
-    dicom = pydicom.dcmread(path)
+def get_dicom_image_pixel_dimensions(dicom_path):
+    ds = pydicom.dcmread(dicom_path)
+    pixel_spacing = ds.PixelSpacing if 'PixelSpacing' in ds else None
+    rows = ds.Rows
+    columns = ds.Columns
+    return pixel_spacing, rows, columns
 
-    # VOI LUT (DICOM cihazından sağlanan) veriyi "insan dostu" şekilde dönüştürür
-    if voi_lut:
-        data = apply_voi_lut(dicom.pixel_array, dicom)
+
+def apply_windowing(data, dicom):
+    try:
+        window_center = dicom.WindowCenter
+        window_width = dicom.WindowWidth
+        intercept = dicom.RescaleIntercept
+        slope = dicom.RescaleSlope
+        if isinstance(window_center, pydicom.multival.MultiValue):
+            window_center = window_center[0]
+        if isinstance(window_width, pydicom.multival.MultiValue):
+            window_width = window_width[0]
+    except AttributeError:
+        window_center = 40
+        window_width = 80
+        intercept = 0
+        slope = 1
+
+    img = (data * slope + intercept)
+    img_min = window_center - window_width // 2
+    img_max = window_center + window_width // 2
+    img = np.clip(img, img_min, img_max)
+    return img
+
+
+def convert_dicom(dicom_path, output_dir):
+    dicom = pydicom.dcmread(dicom_path)
+    if dicom.PhotometricInterpretation == "MONOCHROME1":
+        data = np.amax(dicom.pixel_array) - dicom.pixel_array
     else:
         data = dicom.pixel_array
+    img = apply_windowing(data, dicom)
+    img = (img.astype(float) - img.min()) / (img.max() - img.min())
+    img = Image.fromarray((img * 255).astype(np.uint8))
 
-    # X-ray görüntüsünün ters dönüp dönmediğine göre düzeltme yapıyoruz
-    if fix_monochrome and dicom.PhotometricInterpretation == "MONOCHROME1":
-        data = np.amax(data) - data
-
-    # Görüntüyü normalize etme (0-255 arası)
-    data = data - np.min(data)
-    data = data / np.max(data)
-    data = (data * 255).astype(np.uint8)
-
-    return data
+    img_name, _ = os.path.splitext(os.path.basename(dicom_path))
+    png_path = os.path.join(output_dir, f"{img_name}.png")
+    os.makedirs(output_dir, exist_ok=True)
+    img.save(png_path)
+    return png_path
 
 
-# PNG olarak kaydetme fonksiyonu
-def save_as_png(img_data, output_path):
-    img = Image.fromarray(img_data)
-    img.save(output_path)
+# Giriş ve çıkış klasör yollarını belirleyin
+input_dir = r"C:\Users\canla\Desktop\Ergul"  # Giriş klasörü
+output_dir = r"C:\Users\canla\Desktop\çıkış"  # Çıkış klasörü
 
+# Giriş klasöründeki tüm DICOM dosyalarını al
+for filename in os.listdir(input_dir):
+    if filename.endswith(".dcm"):  # Sadece DICOM dosyalarını al
+        dicom_path = os.path.join(input_dir, filename)
 
-# Klasördeki tüm DICOM dosyalarını işleme
-def process_directory(directory_path, output_directory):
-    # Klasördeki tüm DICOM dosyalarını almak
-    dicom_files = [f for f in Path(directory_path).iterdir() if f.suffix.lower() == '.dcm']
-
-    # Çıktı klasörünü oluştur
-    os.makedirs(output_directory, exist_ok=True)
-
-    # Her DICOM dosyasını işleme
-    processed_count = 0
-    for dicom_path in dicom_files:
-        try:
-            # DICOM dosyasını oku
-            img_data = read_xray(dicom_path)
-
-            # PNG formatında kaydet
-            output_path = os.path.join(output_directory, dicom_path.stem + '.png')
-            save_as_png(img_data, output_path)
-
-            processed_count += 1
-            print(f"Processed {processed_count}/{len(dicom_files)}: {dicom_path.name}")
-
-        except Exception as e:
-            print(f"Error processing {dicom_path.name}: {e}")
-
-    print(f"\nProcessing completed. {processed_count} files were successfully processed.")
-
-
-# Klasör yolunu belirtin
-dicom_folder_path = r"C:\Users\canla\Desktop\Ergul"  # Burayı kendi dizininizle değiştirin
-output_folder_path = r"C:\Users\canla\Desktop\yeniC"  # Çıktı PNG dosyalarının kaydedileceği klasör
-
-# Klasördeki DICOM dosyalarını işle ve PNG'ye dönüştür
-process_directory(dicom_folder_path, output_folder_path)
+        # DICOM dosyasını PNG'ye dönüştür
+        png_path = convert_dicom(dicom_path, output_dir)
+        print(f"Converted {dicom_path} to {png_path}")
