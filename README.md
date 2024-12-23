@@ -4,7 +4,8 @@ The first breast recognition model of a project to enable early treatment and di
 
 PyTorch was utilized while making the project
 
-![Snake animation](https://github.com/ERGUL_USERNAME/ERGUL_USERNAME/blob/output/snake.svg)
+![Snake animation](https://github.com/ergul13/breastdetection/blob/output/snake.svg)
+
 
 ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=ergul13&layout=compact)
 
