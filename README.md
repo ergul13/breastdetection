@@ -6,13 +6,11 @@ PyTorch was utilized while making the project
 
 ![Snake animation](https://github.com/ERGUL_USERNAME/ERGUL_USERNAME/blob/output/snake.svg)
 
-![Ergul's GitHub stats](https://github-readme-stats.vercel.app/api?username=ergul13)
-
 ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=ergul13&layout=compact)
 
 ![Ergul's GitHub stats](https://github-readme-stats.vercel.app/api?username=ergul13&show_icons=true&theme=radical)
 
-![](https://komarev.com/ghpvc/?username=ergul13&color=blue)
+![      ](https://komarev.com/ghpvc/?username=ergul13&color=blue)
 
 ### Tools & Technologies:
 <p align="left">
