@@ -10,7 +10,7 @@ PyTorch was utilized while making the project
 
 ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=ergul13&layout=compact)
 
-![Ergul's GitHub stats](https://github-readme-stats.vercel.app/api?username=ERGUL_USERNAME&show_icons=true&theme=radical)
+![Ergul's GitHub stats](https://github-readme-stats.vercel.app/api?username=ergul13&show_icons=true&theme=radical)
 
 ![](https://komarev.com/ghpvc/?username=ergul13&color=blue)
 
