@@ -10,11 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-   
       - name: Generate Snake Animation
         uses: Platane/snk@v2
         with:
-          github_user_name: ergul13
+          github_user_name: ergul13 
           outputs: dist/snake.svg
 
       - name: Push Snake Animation to GitHub Pages
