@@ -4,4 +4,4 @@ The first breast recognition model of a project to enable early treatment and di
 
 PyTorch was utilized while making the project
 
-[![Ergul's GitHub stats](https://github-readme-stats.vercel.app/apiergul13=anuraghazra)](https://github.com/anuraghazra/github-readme-stats)
+[![Ergul's GitHub stats](https://github-readme-stats.vercel.app/apiergul13=anuraghazra)]
