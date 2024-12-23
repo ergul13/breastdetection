@@ -11,7 +11,8 @@ jobs:
 
     steps:
       - name: Generate Snake Animation
-        uses: Platane/snk@v2
+        uses: Platane/snk@v3.1.0
+
         with:
           github_user_name: ergul13 
           outputs: dist/snake.svg
